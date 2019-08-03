@@ -227,7 +227,7 @@ public class EmailResultReporter extends CollectingTestListener implements
             String mDescription=String.format("Product: %s\n Fingerprint: %s\n",
                     mDevice.getDeviceDescriptor().getProduct(),
                     mDevice.getDeviceDescriptor().getFingerprint());
-
+            bodyBuilder.append(mDescription);
 
             for (Map.Entry<String, String> buildAttr : build.getBuildAttributes().entrySet()) {
                 bodyBuilder.append(buildAttr.getKey());

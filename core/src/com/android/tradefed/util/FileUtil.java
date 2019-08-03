@@ -301,7 +301,7 @@ public class FileUtil {
         return deleteFileAndCreateDirWithSameName(tmpDir);
     }
 
-    //Add by liuwenhua : change temp dir name
+    //Add by liuwenhua : change temp dir name to Data name
     public static File createNewDirByDate(File parentDir) throws IOException {
         if (parentDir != null) {
             CLog.d("Creating New Dir at %s ",
@@ -320,7 +320,7 @@ public class FileUtil {
         File tmpDir = new File(timenow);
         return deleteFileAndCreateDirWithSameName(tmpDir);
     }
-// add end
+    // add end
     private static File deleteFileAndCreateDirWithSameName(File tmpDir) throws IOException {
         tmpDir.delete();
         return createDir(tmpDir);

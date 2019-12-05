@@ -70,10 +70,11 @@ public class LogFileSaver {
     private File createTempDir() {
         try {
             /*
-             * Change by liuwenhua
-             * return FileUtil.createTempDir("inv_");
+             * Change by liuwenhua restore
+             * return FileUtil.createNewDirByDate();
+             *
              */
-            return FileUtil.createNewDirByDate();
+            return FileUtil.createTempDir("inv_");
         } catch (IOException e) {
             // uh oh, this can't be good, abort tradefed
             throw new FatalHostError("Cannot create tmp directory.", e);
@@ -121,11 +122,13 @@ public class LogFileSaver {
         // now create unique directory within the buildDir
         File invocationDir = null;
         try {
+
+            invocationDir = FileUtil.createTempDir("inv_", buildDir);
             /*
-             * change by liuwenhua
-             * invocationDir = FileUtil.createTempDir("inv_", buildDir);
+             * change by liuwenhua restore
+             * invocationDir = FileUtil.createNewDirByDate( buildDir);
              */
-            invocationDir = FileUtil.createNewDirByDate( buildDir);
+
 
             if (logRetentionDays != null && logRetentionDays > 0) {
                 new RetentionFileSaver().writeRetentionFile(invocationDir, logRetentionDays);

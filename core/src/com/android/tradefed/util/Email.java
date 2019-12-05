@@ -17,9 +17,12 @@
 package com.android.tradefed.util;
 
 import com.android.ddmlib.Log;
+import com.android.tradefed.log.LogUtil.CLog;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -110,7 +113,7 @@ public class Email implements IEmail {
             addHeader(headers, "From", msg.getSender());
 
             // Envelope Sender (will receive any errors related to the email)
-            int cmdLen = mailer.length + 2;
+            int cmdLen = mailer.length + 2; //change bu liuwenhua
             mailCmd = Arrays.copyOf(mailer, cmdLen);
             mailCmd[cmdLen - 2] = "-f";
             mailCmd[cmdLen - 1] = msg.getSender();
@@ -122,29 +125,87 @@ public class Email implements IEmail {
         addHeaders(headers, "Bcc", msg.getBcc());
         addHeader(headers, "Content-type", msg.getContentType());
         addHeader(headers, "Subject", msg.getSubject());
-
+        CLog.d("liuwenhua:Check annex: %s",
+                msg.getAnnex());
+        //addHeader(headers,"uuencode",msg.getAnnex()); //add by liuwenhua
+        //headers.add(String.format(";uuencode %s TestReport.html",msg.getAnnex()));
+        /*
+        mailCmd[cmdLen - 2] = "-a";
+        mailCmd[cmdLen - 1] = msg.getAnnex();
+        */
         final StringBuilder fullMsg = new StringBuilder();
         fullMsg.append(join(headers, CRLF));
         fullMsg.append(CRLF);
         fullMsg.append(CRLF);
-        fullMsg.append(msg.getBody());
+        //fullMsg.append(msg.getBody());
+        CLog.i("liuwenhua: Send Email: %s",
+                fullMsg);
+        CLog.d("About to send email with command: %s",
+                Arrays.toString(mailCmd));
 
         Log.d(LOG_TAG, String.format("About to send email with command: %s",
                 Arrays.toString(mailCmd)));
+
+
+        //String[] uuencode= {"uuencode",msg.getAnnex(),"TestReport.html"};
+        //Process uuencodeProc=run(uuencode);
+
+
+
         Process mailerProc = run(mailCmd);
+
+        //PipedInputStream uuencodeStdin = new PipedInputStream();
+        //PipedOutputStream pipeOut=new PipedOutputStream();
+        //BufferedInputStream uuencodeStdin = new BufferedInputStream(uuencodeProc.getInputStream());
         BufferedOutputStream mailerStdin = new BufferedOutputStream(mailerProc.getOutputStream());
+        //BufferedReader br = new BufferedReader(uuencodeStdin);
+
         /* There is no such thing as a "character" in the land of the shell; there are only bytes.
          * Here, we convert the body from a Java string (consisting of characters) to a byte array
          * encoding each character with UTF-8.  Each character will be represented as between one
          * and four bytes apiece.
          */
         mailerStdin.write(fullMsg.toString().getBytes("UTF-8"));
+        //mailerStdin.flush();
+
+        File fileAttach=new File(msg.getAnnex());
+        BufferedInputStream fileInput = new BufferedInputStream(new FileInputStream(fileAttach));
+        StringBuilder strb = new StringBuilder();
+        byte[] bytearray = new byte[1024];
+        int length = 0;
+        while((length =fileInput.read(bytearray)) != -1) {
+            mailerStdin.write(bytearray);
+            strb.append(new String(bytearray,0,length));
+            if(fileInput.available()<1024){
+                bytearray=null;
+                bytearray=new byte[1024];
+            }
+
+        }
+      //mailerStdin.write(strb.toString().getBytes());
+        fileInput.close();
         mailerStdin.flush();
+
+        /*
+        try {
+            uuencodeStdin.wait(3000);
+        } catch (InterruptedException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+        */
+        //uuencodeStdin.close();
+        //CLog.d("liuwenhua:check mail: \n%s",strb.toString());
+
+
+
+
         mailerStdin.close();
 
         int retValue;
         try {
             retValue = mailerProc.waitFor();
+            CLog.i("liuwenhua: Send Email success!");
         } catch (InterruptedException e) {
             // ignore, but set retValue to something bogus
             retValue = -12345;
@@ -159,7 +220,7 @@ public class Email implements IEmail {
             }
             Log.e(LOG_TAG, "Mailer output was: " + stdout.toString());
         } else {
-            Log.v(LOG_TAG, "Mailer returned successfully.");
+            Log.i(LOG_TAG, "Mailer returned successfully.");
         }
     }
 }

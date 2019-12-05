@@ -798,6 +798,7 @@ public abstract class ITestSuite
     public Set<IAbi> getAbis(ITestDevice device) throws DeviceNotAvailableException {
         Set<IAbi> abis = new LinkedHashSet<>();
         Set<String> archAbis = getAbisForBuildTargetArch();
+        CLog.d("liuwenhua: abi: %s | primaryabi   %s | deviceabi %s ",mAbiName,mPrimaryAbiRun,Arrays.asList(AbiFormatter.getSupportedAbis(device, "")));
         if (mPrimaryAbiRun) {
             if (mAbiName == null) {
                 // Get the primary from the device and make it the --abi to run.

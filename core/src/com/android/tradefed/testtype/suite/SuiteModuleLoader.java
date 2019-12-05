@@ -118,6 +118,8 @@ public class SuiteModuleLoader {
         IConfigurationFactory configFactory = ConfigurationFactory.getInstance();
         List<String> configs = configFactory.getConfigList(suitePrefix, false);
         // Sort configs to ensure they are always evaluated and added in the same order.
+
+        CLog.d("liuwenhua:check configs: %s",configs);
         Collections.sort(configs);
         for (String configName : configs) {
             toRun.putAll(loadOneConfig(configName, configName, abis, suiteTag));

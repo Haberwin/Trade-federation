@@ -196,11 +196,12 @@ public class FileSystemLogSaver implements ILogSaver {
         // now create unique directory within the buildDir
         try {
             File buildDir = createBuildDir(buildInfo, reportDir);
+            logReportDir = FileUtil.createTempDir("inv_", buildDir);
             /*
-             * change by liuwenhua
-             * logReportDir = FileUtil.createTempDir("inv_", buildDir);
+             * change by liuwenhua restore
+             * logReportDir = FileUtil.createNewDirByDate( buildDir);
              */
-            logReportDir = FileUtil.createNewDirByDate( buildDir);
+
         } catch (IOException e) {
             CLog.e("Unable to create unique directory in %s. Attempting to use tmp dir instead",
                     reportDir.getAbsolutePath());
@@ -271,11 +272,12 @@ public class FileSystemLogSaver implements ILogSaver {
      */
     private File createTempDir() {
         try {
+            return FileUtil.createTempDir("inv_");
             /*
-             * change by liuwenhua
-             * return FileUtil.createTempDir("inv_");
+             * change by liuwenhua restore
+             * return FileUtil.createNewDirByDate();
              */
-            return FileUtil.createNewDirByDate();
+
         } catch (IOException e) {
             // Abort tradefed if a temp directory cannot be created
             throw new FatalHostError("Cannot create tmp directory.", e);

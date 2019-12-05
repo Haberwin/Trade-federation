@@ -19,6 +19,9 @@ import com.android.tradefed.log.LogUtil.CLog;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Properties;
 
 /**
@@ -51,11 +54,11 @@ public class TestSuiteInfo {
                 CLog.w("Unable to load suite info from jar resource %s, using stub info instead",
                         SUITE_INFO_PROPERTY);
                 mTestSuiteInfo = new Properties();
-                mTestSuiteInfo.setProperty(BUILD_NUMBER, "[stub build number]");
-                mTestSuiteInfo.setProperty(TARGET_ARCH, "[stub target arch]");
-                mTestSuiteInfo.setProperty(NAME, "[stub name]");
-                mTestSuiteInfo.setProperty(FULLNAME, "[stub fullname]");
-                mTestSuiteInfo.setProperty(VERSION, "[stub version]");
+                mTestSuiteInfo.setProperty(BUILD_NUMBER, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(new Date()));
+                mTestSuiteInfo.setProperty(TARGET_ARCH, "arm64-v8a");
+                mTestSuiteInfo.setProperty(NAME, "System Test");
+                mTestSuiteInfo.setProperty(FULLNAME, "MaiDu-Val");
+                mTestSuiteInfo.setProperty(VERSION, "MaiDu");
             }
         } catch (IOException ioe) {
             // rethrow as runtime exception

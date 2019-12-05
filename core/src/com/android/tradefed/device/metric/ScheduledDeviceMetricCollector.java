@@ -147,7 +147,7 @@ public abstract class ScheduledDeviceMetricCollector extends BaseDeviceMetricCol
      */
     @VisibleForTesting
     String getFileSuffix() {
-        return new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.US).format(new Date());
+        return new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.CHINA).format(new Date());
     }
 
     /**

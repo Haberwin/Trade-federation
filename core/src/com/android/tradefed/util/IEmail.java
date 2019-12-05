@@ -16,6 +16,7 @@
 
 package com.android.tradefed.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,7 +56,10 @@ public interface IEmail {
         private String mSubject = null;
         private String mBody = null;
         private String mSender = null;
-        private String mContentType = PLAIN;
+        private String mContentType = HTML;// Last value is PLAIN ,Change by liuwenhua
+
+
+        private String mAnnex=null; //Add by liuwenhua
 
         public Message() {}
 
@@ -78,6 +82,13 @@ public interface IEmail {
             }
             mToAddrs.add(address);
         }
+
+        //Add by liuwenhua to add annex
+        public void addFile(String filepath) {
+                mAnnex=filepath;
+
+        }
+        //end
         public void addCc(String address) {
             if (mCcAddrs == null) {
                 mCcAddrs = new ArrayList<String>();
@@ -115,7 +126,7 @@ public interface IEmail {
 
         public void setHtml(boolean html) {
             if (html) {
-                setContentType(HTML);
+                setContentType(HTML); //Modify by liuwenhua
             } else {
                 setContentType(PLAIN);
             }
@@ -130,6 +141,14 @@ public interface IEmail {
         public Collection<String> getBcc() {
             return mBccAddrs;
         }
+        //Add by liuwenhua
+        public String getAnnex() {
+
+            File mfile =new File(mAnnex);
+            return mfile.getAbsolutePath();
+        }
+        //end
+
         public String getSubject() {
             return mSubject;
         }

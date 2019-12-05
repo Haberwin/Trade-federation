@@ -50,6 +50,8 @@ public class XmlFormattedGeneratorReporter extends FormattedGeneratorReporter {
             return;
         }
         // Post-formatting step if something in particular needs to be done with the results.
+        CLog.w("liuwenhua: check info run postFormattingStep");
+
         postFormattingStep(resultDir, resultReportFile);
     }
 

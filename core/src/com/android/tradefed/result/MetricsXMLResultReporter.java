@@ -108,7 +108,7 @@ public class MetricsXMLResultReporter extends CollectingTestListener {
             if (mLog != null) {
                 String msg =
                         String.format(
-                                Locale.US,
+                                Locale.CHINA,
                                 "XML metrics report generated at %s. "
                                         + "Total tests %d, Failed %d",
                                 mLog.getPath(),
@@ -204,7 +204,7 @@ public class MetricsXMLResultReporter extends CollectingTestListener {
     @VisibleForTesting
     public String getTimeStamp() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+:08:00"));
         dateFormat.setLenient(true);
         return dateFormat.format(new Date());
     }

@@ -36,7 +36,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A simple result reporter base class that sends emails for test results.<br>
@@ -48,6 +47,7 @@ public class EmailResultReporter extends CollectingTestListener implements
         ITestSummaryListener {
     private static final String DEFAULT_SUBJECT_TAG = "Tradefed";
     private static final String TEST_FAILURE_STATUS = "FAILED";
+    private static final String FAILURE_SUITE_REPORT="results/latest/test_result_failures_suite.html";
 
     @Option(name = "sender", description = "The envelope-sender address to use for the messages.",
             importance = Importance.IF_UNSET)
@@ -66,11 +66,19 @@ public class EmailResultReporter extends CollectingTestListener implements
             + "To be used with care, as it could be pretty big with traces.")
     private boolean mIncludeTestFailures = false;
 
+
     private List<TestSummary> mSummaries = null;
     private Throwable mInvocationThrowable = null;
     private IEmail mMailer;
-    private boolean mHtml;
+    //add by liuwenhua
+    @Option(name="annex",description="test result report path")
+    private String mAnnex = FAILURE_SUITE_REPORT;
 
+
+    @Option(name = "style-html", description = "Format the report, default is html",
+            importance = Importance.IF_UNSET)
+    private boolean mHtml=true;
+    //end
     /**
      * Create a {@link EmailResultReporter}
      */
@@ -98,6 +106,16 @@ public class EmailResultReporter extends CollectingTestListener implements
         mDestinations.add(dest);
     }
 
+    //add by liuwenhua
+    /**
+     * Adds an email annex path.
+     *
+     * @param dest
+     */
+    public void addAnnex(String filepath) {
+        mAnnex=filepath;
+    }
+    //
 
     /**
      * {@inheritDoc}
@@ -224,17 +242,18 @@ public class EmailResultReporter extends CollectingTestListener implements
             //bodyBuilder.append(String.format("Device %s:\n", build.getDeviceSerial()));
             ITestDevice mDevice=getInvocationContext().getDeviceBySerial(build.getDeviceSerial());
 
-            String mDescription=String.format("Product: %s\n Fingerprint: %s\n",
+            String mDescription=String.format("Product: %s\r\n Fingerprint: %s\r\n",
                     mDevice.getDeviceDescriptor().getProduct(),
                     mDevice.getDeviceDescriptor().getFingerprint());
             bodyBuilder.append(mDescription);
-
+            /* Delete by liuwenhua, No need!
             for (Map.Entry<String, String> buildAttr : build.getBuildAttributes().entrySet()) {
                 bodyBuilder.append(buildAttr.getKey());
                 bodyBuilder.append(": ");
                 bodyBuilder.append(buildAttr.getValue());
                 bodyBuilder.append("\n");
             }
+            */
         }
         bodyBuilder.append("host: ");
         try {
@@ -243,12 +262,12 @@ public class EmailResultReporter extends CollectingTestListener implements
             bodyBuilder.append("unknown");
             CLog.e(e);
         }
-        bodyBuilder.append("\n\n");
+        bodyBuilder.append("\r\n");
 
         if (mInvocationThrowable != null) {
             bodyBuilder.append("Invocation failed: ");
             bodyBuilder.append(StreamUtil.getStackTrace(mInvocationThrowable));
-            bodyBuilder.append("\n");
+            bodyBuilder.append("\r\n");
         }
         bodyBuilder.append(String.format("Test results:  %d passed, %d failed\n\n",
                 getNumTestsInState(TestStatus.PASSED), getNumAllFailedTests()));
@@ -263,11 +282,11 @@ public class EmailResultReporter extends CollectingTestListener implements
                 if (TestStatus.FAILURE.equals(tr.getStatus())) {
                     bodyBuilder.append(String.format("Test Identifier: %s\nStack: %s", tid,
                             tr.getStackTrace()));
-                    bodyBuilder.append("\n");
+                    bodyBuilder.append("\r\n");
                 }
             }
         }
-        bodyBuilder.append("\n");
+        bodyBuilder.append("\r\n");
 
         if (mSummaries != null) {
             for (TestSummary summary : mSummaries) {
@@ -318,17 +337,26 @@ public class EmailResultReporter extends CollectingTestListener implements
         }
 
         Message msg = new Message();
+
         msg.setSender(mSender);
         msg.setSubject(generateEmailSubject());
         msg.setBody(generateEmailBody());
+
+
+      //Add by liuwenhua
+        msg.addFile(mAnnex);
+        //end
         msg.setHtml(isHtml());
         Iterator<String> toAddress = mDestinations.iterator();
         while (toAddress.hasNext()) {
             msg.addTo(toAddress.next());
         }
 
+
+
         try {
             mMailer.send(msg);
+
         } catch (IllegalArgumentException e) {
             CLog.e("Failed to send email");
             CLog.e(e);

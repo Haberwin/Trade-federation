@@ -356,7 +356,9 @@ public class XmlSuiteResultFormatter implements IFormatterGenerator {
                 case JPEG:
                     serializer.startTag(NS, SCREENSHOT_TAG);
                     serializer.attribute(NS, LOG_FILE_NAME_ATTR, key);
-                    serializer.text(loggedFiles.get(key).getUrl());
+                    //CLog.e("liuwenhua:getkey|%s|%s|%s",key,loggedFiles.get(key),loggedFiles.get(key).getUrl());
+                    //serializer.text(loggedFiles.get(key).getUrl());
+                    serializer.text(loggedFiles.get(key).getPath());
                     serializer.endTag(NS, SCREENSHOT_TAG);
                     break;
                 default:

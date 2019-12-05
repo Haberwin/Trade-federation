@@ -15,10 +15,7 @@
  */
 package com.android.tradefed.build;
 
-import com.android.tradefed.build.IBuildInfo;
-import com.android.tradefed.build.IDeviceBuildInfo;
-import com.android.tradefed.build.IFolderBuildInfo;
-import com.android.tradefed.build.VersionedFile;
+import com.android.tradefed.log.LogUtil.CLog;
 import com.android.tradefed.util.FileUtil;
 
 import java.io.File;
@@ -59,6 +56,22 @@ public class CompatibilityBuildHelper {
      */
     public CompatibilityBuildHelper(IBuildInfo buildInfo) {
         mBuildInfo = buildInfo;
+
+        // add by liuwenhua
+        if (!mBuildInfo.getBuildAttributes().containsKey(START_TIME_MS)){
+            mBuildInfo.addBuildAttribute(START_TIME_MS, String.valueOf((new Date()).getTime()));
+
+        }
+        if (!mBuildInfo.getBuildAttributes().containsKey(SUITE_NAME)){
+            mBuildInfo.addBuildAttribute(SUITE_NAME, "MaiDu");
+
+        }
+        if (!mBuildInfo.getBuildAttributes().containsKey(SUITE_PLAN)){
+            mBuildInfo.addBuildAttribute(SUITE_PLAN, "Q0");
+
+        }
+
+
     }
 
     public IBuildInfo getBuildInfo() {
@@ -163,14 +176,20 @@ public class CompatibilityBuildHelper {
      */
     public File getRootDir() throws FileNotFoundException {
         File dir = null;
+        //CLog.i("liuwenhua:check mBuildInfo %s", mBuildInfo.toString());
         if (mBuildInfo instanceof IFolderBuildInfo) {
             dir = ((IFolderBuildInfo) mBuildInfo).getRootDir();
+            CLog.i("rootDir %s", dir.getName());
         }
         if (dir == null || !dir.exists()) {
+            /*
+            CLog.i("Check buildAttributrs %s", mBuildInfo.getBuildAttributes());
             dir = new File(mBuildInfo.getBuildAttributes().get(ROOT_DIR));
             if (!dir.exists()) {
                 dir = new File(mBuildInfo.getBuildAttributes().get(ROOT_DIR2));
             }
+            */
+            dir=new File("").getAbsoluteFile();
         }
         if (!dir.exists()) {
             throw new FileNotFoundException(String.format(
@@ -186,7 +205,8 @@ public class CompatibilityBuildHelper {
      * @throws FileNotFoundException if the directory does not exist
      */
     public File getDir() throws FileNotFoundException {
-        File dir = new File(getRootDir(), String.format("android-%s", getSuiteName().toLowerCase()));
+        //File dir = new File(getRootDir(), String.format("android-%s", getSuiteName().toLowerCase()));
+        File dir = getRootDir();
         if (!dir.exists()) {
             throw new FileNotFoundException(String.format(
                     "Compatibility install folder %s does not exist",
@@ -200,6 +220,7 @@ public class CompatibilityBuildHelper {
      * @throws FileNotFoundException if the directory structure is not valid.
      */
     public File getResultsDir() throws FileNotFoundException {
+        CLog.d("liuwenhua:get ResultDir %s", getDir());
         return new File(getDir(), "results");
     }
 
@@ -208,8 +229,19 @@ public class CompatibilityBuildHelper {
      * @throws FileNotFoundException if the directory structure is not valid.
      */
     public File getResultDir() throws FileNotFoundException {
+        /*
         return new File(getResultsDir(),
             getDirSuffix(Long.parseLong(mBuildInfo.getBuildAttributes().get(START_TIME_MS))));
+            */
+        CLog.d("Check buildAttributrs %s", mBuildInfo.getBuildAttributes());
+        File dir=new File(getResultsDir(),
+                getDirSuffix(Long.parseLong(mBuildInfo.getBuildAttributes().get(START_TIME_MS))));
+        /*
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+        */
+        return dir;
     }
 
     /**

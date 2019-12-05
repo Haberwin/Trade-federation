@@ -150,6 +150,7 @@ public class BaseTestSuite extends ITestSuite {
                     createModuleLoader(
                             mIncludeFiltersParsed, mExcludeFiltersParsed, mTestArgs, mModuleArgs);
             // Actual loading of the configurations.
+            CLog.d("liuwenhua: absi:%s|testDirs %s|suitePrefix %s|suiteTag %s",abis,testsDir,mSuitePrefix,mSuiteTag);
             return loadingStrategy(abis, testsDir, mSuitePrefix, mSuiteTag);
         } catch (DeviceNotAvailableException | FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -181,6 +182,9 @@ public class BaseTestSuite extends ITestSuite {
             mConfigPatterns.add(".*\\.config");
             mConfigPatterns.add(".*\\.xml");
         }
+        CLog.d("liuwenhua:ConfigsPatterns:%s",mConfigPatterns);
+
+        CLog.d("liuwenhua: absi:%s|testDirs %s|suitePrefix %s|suiteTag %s",abis,testsDir,suitePrefix,suiteTag);
         loadedConfigs.putAll(
                 getModuleLoader()
                         .loadConfigsFromDirectory(
